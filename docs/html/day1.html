@@ -1,0 +1,166 @@
+<!DOCTYPE  html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>doc</title>
+    <style>
+      /*github.com style (c) Vasily Polovnyov <vast@whiteants.net>*/
+      pre code {
+        display: block; padding: 0.5em;
+        color: #333;
+        background: #f8f8ff
+      }
+      pre .comment,
+      pre .template_comment,
+      pre .diff .header,
+      pre .javadoc {
+        color: #998;
+        font-style: italic
+      }
+      pre .keyword,
+      pre .css .rule .keyword,
+      pre .winutils,
+      pre .javascript .title,
+      pre .nginx .title,
+      pre .subst,
+      pre .request,
+      pre .status {
+        color: #333;
+        font-weight: bold
+      }
+      pre .number,
+      pre .hexcolor,
+      pre .ruby .constant {
+        color: #099;
+      }
+      pre .string,
+      pre .tag .value,
+      pre .phpdoc,
+      pre .tex .formula {
+        color: #d14
+      }
+      pre .title,
+      pre .id {
+        color: #900;
+        font-weight: bold
+      }
+      pre .javascript .title,
+      pre .lisp .title,
+      pre .clojure .title,
+      pre .subst {
+        font-weight: normal
+      }
+      pre .class .title,
+      pre .haskell .type,
+      pre .vhdl .literal,
+      pre .tex .command {
+        color: #458;
+        font-weight: bold
+      }
+      pre .tag,
+      pre .tag .title,
+      pre .rules .property,
+      pre .django .tag .keyword {
+        color: #000080;
+        font-weight: normal
+      }
+      pre .attribute,
+      pre .variable,
+      pre .lisp .body {
+        color: #008080
+      }
+      pre .regexp {
+        color: #009926
+      }
+      pre .class {
+        color: #458;
+        font-weight: bold
+      }
+      pre .symbol,
+      pre .ruby .symbol .string,
+      pre .lisp .keyword,
+      pre .tex .special,
+      pre .prompt {
+        color: #990073
+      }
+      pre .built_in,
+      pre .lisp .title,
+      pre .clojure .built_in {
+        color: #0086b3
+      }
+      pre .preprocessor,
+      pre .pi,
+      pre .doctype,
+      pre .shebang,
+      pre .cdata {
+        color: #999;
+        font-weight: bold
+      }
+      pre .deletion {
+        background: #fdd
+      }
+      pre .addition {
+        background: #dfd
+      }
+      pre .diff .change {
+        background: #0086b3
+      }
+      pre .chunk {
+        color: #aaa
+      }
+    </style>
+  </head>
+  <body>  
+    <p>Today is the fourth day of my challenge to learn 30 technologies in 30 days. So far I am enjoying it and getting good response from fellow developers. I am more than motivated to do it for full 30 days. In this blog, I will cover how we can very easily build blog recommendation engine using <a href="http://prediction.io/" target="_blank">PredictionIO</a>. The full blog series can be tracked on this <a href="http://whyjava.wordpress.com/30-technologies-in-30-days/" target="_blank">page</a>.</p>
+<h2>Application Usecase</h2>
+<p>The usecase that we are implementing is similar to Amazon &quot;Customers Who Bought This Item Also Bought these items&quot; feature. Our usecase is people who viewed this blog also viewed these blogs.</p>
+<h2>Developing Blog Recommender Java Application</h2>
+<p>Now that we have created PredictionIO application its time to write our Java application. We will be using Eclipse to develop the application. I am using Eclipse Kepler which has m2eclipse integration built in. Create a new Maven based project by navigating to File &gt; New &gt; Maven Project. Choose the maven-archetype-quickstart and then enter Maven project details. Replace the pom.xml with the one shown below.</p>
+<p>The things to note in above is the Maven dependency for PredictionIO Java API.</p>
+<p>Now we will write a class which will insert data into PredictionIO. The class is shown below.</p>
+<pre><code>package com.shekhar.blog_recommender;
+
+import io.prediction.Client;
+import io.prediction.CreateItemRequestBuilder;
+
+public class BlogDataInserter {
+
+    private static final String API_KEY = &quot;wwoTLn0FR7vH6k51Op8KbU1z4tqeFGZyvBpSgafOaSSe40WqdMf90lEncOA0SB13&quot;;
+
+    public static void main(String[] args) throws Exception {
+        Client client = new Client(API_KEY);
+        addUsers(client);
+        addBlogs(client);
+        userItemViews(client);
+        client.close();
+
+    }
+
+    private static void addUsers(Client client) throws Exception {
+        String[] users = { &quot;shekhar&quot;, &quot;rahul&quot;};
+        for (String user : users) {
+            System.out.println(&quot;Added User &quot; + user);
+            client.createUser(user);
+        }
+
+    }
+
+    private static void addBlogs(Client client) throws Exception {
+        CreateItemRequestBuilder blog1 = client.getCreateItemRequestBuilder(&quot;blog1&quot;, new String[]{&quot;machine-learning&quot;});
+        client.createItem(blog1);
+
+
+    }
+
+    private static void userItemViews(Client client) throws Exception {
+        client.identify(&quot;shekhar&quot;);
+        client.userActionItem(&quot;view&quot;,&quot;blog1&quot;);
+        client.userActionItem(&quot;view&quot;,&quot;blog4&quot;);
+        client.userActionItem(&quot;view&quot;,&quot;blog5&quot;);
+    }
+
+}</code></pre>
+
+  </body>
+</html>
